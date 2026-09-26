@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Health HMS — Appointments</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">✚</div>
+        <div>
+          <div class="logo-name">Smart Health</div>
+          <div class="logo-tag">Healing People. Powering Care.</div>
+        </div>
+      </div>
+      <div class="nav">
+        <div class="nav-sect">Overview</div>
+        <a class="nav-item" href="dashboard.html"><span class="nav-icon">🏠</span>Dashboard</a>
+        <div class="nav-sect">Clinical</div>
+        <a class="nav-item" href="patients.html"><span class="nav-icon">👤</span>Patients<span class="nav-badge" id="nav-count">9</span></a>
+        <a class="nav-item" href="doctors.html"><span class="nav-icon">🩺</span>Doctors</a>
+        <a class="nav-item" href="appointments.html"><span class="nav-icon">📅</span>Appointments<span class="nav-badge">7</span></a>
+        <div class="nav-sect">Administration</div>
+        <a class="nav-item" href="billing.html"><span class="nav-icon">💳</span>Billing</a>
+        <a class="nav-item" href="wards.html"><span class="nav-icon">🏥</span>Wards &amp; Beds</a>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-row">
+          <div class="avatar" id="sidebar-avatar">DR</div>
+          <div>
+            <div class="user-name" id="sidebar-name">Dr. Robert Chen</div>
+            <div class="user-role" id="sidebar-role">Admin · Administration</div>
+          </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">🚪 Sign Out</button>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="topbar-title">Appointments</div>
+        <span id="live-clock"></span>
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-inp" placeholder="Search patient or doctor…">
+        </div>
+        <button class="icon-btn theme-btn" onclick="Theme.toggle()" title="Toggle theme">🌙</button>
+        <div class="icon-btn" id="notif-btn" onclick="Notifs.toggle()">
+          🔔<span class="notif-badge" id="notif-badge">2</span>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('appt-modal')">+ Schedule</button>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+
+        <!-- Mini Stats -->
+        <div class="mini-stats">
+          <div class="mini-sc">
+            <div class="mini-lbl">Today Total</div>
+            <div class="mini-val" id="stat-total">0</div>
+          </div>
+          <div class="mini-sc">
+            <div class="mini-lbl">Completed</div>
+            <div class="mini-val" id="stat-done" style="color:var(--green)">0</div>
+          </div>
+          <div class="mini-sc">
+            <div class="mini-lbl">In Progress</div>
+            <div class="mini-val" id="stat-progress" style="color:var(--amber)">0</div>
+          </div>
+          <div class="mini-sc">
+            <div class="mini-lbl">Upcoming</div>
+            <div class="mini-val" id="stat-upcoming" style="color:var(--accent)">0</div>
+          </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <div class="tab-row">
+            <button class="tab active" onclick="setApptFilter('all',this)">All</button>
+            <button class="tab" onclick="setApptFilter('done',this)">Completed</button>
+            <button class="tab" onclick="setApptFilter('progress',this)">In Progress</button>
+            <button class="tab" onclick="setApptFilter('upcoming',this)">Upcoming</button>
+          </div>
+          <span style="margin-left:auto;font-size:13px;color:var(--text2);font-family:var(--font-mono)">
+            📅 Wed, Mar 18 2026
+          </span>
+        </div>
+
+        <!-- Timeline -->
+        <div id="timeline"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Schedule Appointment Modal -->
+  <div class="overlay" id="appt-modal">
+    <div class="modal">
+      <div class="modal-hd">
+        <div class="modal-title">Schedule Appointment</div>
+        <button class="modal-close" onclick="closeModal('appt-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Patient Name *</label>
+            <input class="form-input" id="f-patient" type="text" placeholder="Emma Wilson">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Doctor</label>
+            <select class="form-input" id="f-doc">
+              <option>Dr. Chen</option>
+              <option>Dr. Patel</option>
+              <option>Dr. Kim</option>
+              <option>Dr. Torres</option>
+              <option>Dr. Martinez</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Time</label>
+            <input class="form-input" id="f-time" type="time" value="09:00">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Room</label>
+            <input class="form-input" id="f-room" type="text" placeholder="A-201">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          <select class="form-input" id="f-type">
+            <option>Consultation</option>
+            <option>Follow-up</option>
+            <option>Post-op Review</option>
+            <option>Checkup</option>
+            <option>Scan</option>
+            <option>Vaccination</option>
+          </select>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('appt-modal')">Cancel</button>
+          <button class="btn btn-primary" onclick="scheduleAppt()">Schedule</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Modal -->
+  <div class="overlay" id="confirm-modal">
+    <div class="confirm-box">
+      <div class="confirm-title" id="confirm-title">Confirm Action</div>
+      <div class="confirm-msg" id="confirm-msg"></div>
+      <div class="confirm-actions">
+        <button class="btn btn-ghost" onclick="closeModal('confirm-modal')">Cancel</button>
+        <button class="btn btn-danger" id="confirm-yes">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Dropdown -->
+  <div class="notif-dropdown" id="notif-dropdown">
+    <div class="notif-hd">
+      <span>Notifications</span>
+      <span onclick="Notifs.markAllRead()">Mark all read</span>
+    </div>
+    <div id="notif-panel"></div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="toast-icon" id="t-icon">ℹ️</span>
+    <span class="toast-msg" id="t-msg"></span>
+    <span class="toast-close" onclick="Toast.hide()">✕</span>
+  </div>
+
+  <!-- Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="trail" id="trail"></div>
+
+  <script src="app.js"></script>
+  <script src="assistant.js"></script>
+  <script src="modules.js"></script>
+
+</body>
+</html>

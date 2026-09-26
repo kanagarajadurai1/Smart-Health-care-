@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Health HMS — Wards &amp; Beds</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">✚</div>
+        <div>
+          <div class="logo-name">Smart Health</div>
+          <div class="logo-tag">Healing People. Powering Care.</div>
+        </div>
+      </div>
+      <div class="nav">
+        <div class="nav-sect">Overview</div>
+        <a class="nav-item" href="dashboard.html"><span class="nav-icon">🏠</span>Dashboard</a>
+        <div class="nav-sect">Clinical</div>
+        <a class="nav-item" href="patients.html"><span class="nav-icon">👤</span>Patients<span class="nav-badge" id="nav-count">9</span></a>
+        <a class="nav-item" href="doctors.html"><span class="nav-icon">🩺</span>Doctors</a>
+        <a class="nav-item" href="appointments.html"><span class="nav-icon">📅</span>Appointments<span class="nav-badge">7</span></a>
+        <div class="nav-sect">Administration</div>
+        <a class="nav-item" href="billing.html"><span class="nav-icon">💳</span>Billing</a>
+        <a class="nav-item" href="wards.html"><span class="nav-icon">🏥</span>Wards &amp; Beds</a>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-row">
+          <div class="avatar" id="sidebar-avatar">DR</div>
+          <div>
+            <div class="user-name" id="sidebar-name">Dr. Robert Chen</div>
+            <div class="user-role" id="sidebar-role">Admin · Administration</div>
+          </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">🚪 Sign Out</button>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="topbar-title">Wards &amp; Beds</div>
+        <span id="live-clock"></span>
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-inp" placeholder="Search…">
+        </div>
+        <button class="icon-btn theme-btn" onclick="Theme.toggle()" title="Toggle theme">🌙</button>
+        <div class="icon-btn" id="notif-btn" onclick="Notifs.toggle()">
+          🔔<span class="notif-badge" id="notif-badge">2</span>
+        </div>
+        <button class="btn btn-primary" onclick="addBed()">+ Add Bed</button>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+
+        <!-- Mini Stats -->
+        <div class="mini-stats">
+          <div class="mini-sc">
+            <div class="mini-lbl">Total Beds</div>
+            <div class="mini-val" id="ward-total">62</div>
+          </div>
+          <div class="mini-sc">
+            <div class="mini-lbl">Occupied</div>
+            <div class="mini-val" id="ward-occupied" style="color:var(--red)">41</div>
+          </div>
+          <div class="mini-sc">
+            <div class="mini-lbl">Available</div>
+            <div class="mini-val" id="ward-available" style="color:var(--green)">17</div>
+          </div>
+          <div class="mini-sc">
+            <div class="mini-lbl">Maintenance</div>
+            <div class="mini-val" id="ward-maintenance" style="color:var(--amber)">4</div>
+          </div>
+        </div>
+
+        <!-- Bed Grids -->
+        <div class="grid-2" style="margin-bottom:16px">
+
+          <!-- General Ward -->
+          <div class="card">
+            <div class="card-hd">
+              <div class="card-title">
+                General Ward
+                <span style="font-size:11px;color:var(--text2);font-weight:400;margin-left:8px">Floor 2</span>
+              </div>
+              <span class="badge b-amber" id="ward-badge-0">18/24 Occupied</span>
+            </div>
+            <div class="card-body">
+              <div class="bed-grid" id="gen-grid"></div>
+              <div class="ward-legend">
+                <span><span class="w-dot" style="background:var(--red)"></span>Occupied</span>
+                <span><span class="w-dot" style="background:var(--green)"></span>Available</span>
+                <span><span class="w-dot" style="background:var(--amber)"></span>Maintenance</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ICU -->
+          <div class="card">
+            <div class="card-hd">
+              <div class="card-title">
+                ICU
+                <span style="font-size:11px;color:var(--text2);font-weight:400;margin-left:8px">Floor 4</span>
+              </div>
+              <span class="badge b-red" id="ward-badge-1">8/10 Occupied</span>
+            </div>
+            <div class="card-body">
+              <div class="bed-grid" id="icu-grid"></div>
+              <div class="ward-legend">
+                <span><span class="w-dot" style="background:var(--red)"></span>Occupied</span>
+                <span><span class="w-dot" style="background:var(--green)"></span>Available</span>
+                <span><span class="w-dot" style="background:var(--amber)"></span>Maintenance</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cardiology -->
+          <div class="card">
+            <div class="card-hd">
+              <div class="card-title">
+                Cardiology Ward
+                <span style="font-size:11px;color:var(--text2);font-weight:400;margin-left:8px">Floor 3</span>
+              </div>
+              <span class="badge b-blue" id="ward-badge-2">10/16 Occupied</span>
+            </div>
+            <div class="card-body">
+              <div class="bed-grid" id="cardio-grid"></div>
+              <div class="ward-legend">
+                <span><span class="w-dot" style="background:var(--red)"></span>Occupied</span>
+                <span><span class="w-dot" style="background:var(--green)"></span>Available</span>
+                <span><span class="w-dot" style="background:var(--amber)"></span>Maintenance</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pediatrics -->
+          <div class="card">
+            <div class="card-hd">
+              <div class="card-title">
+                Pediatrics Ward
+                <span style="font-size:11px;color:var(--text2);font-weight:400;margin-left:8px">Floor 1</span>
+              </div>
+              <span class="badge b-green" id="ward-badge-3">5/12 Occupied</span>
+            </div>
+            <div class="card-body">
+              <div class="bed-grid" id="pedi-grid"></div>
+              <div class="ward-legend">
+                <span><span class="w-dot" style="background:var(--red)"></span>Occupied</span>
+                <span><span class="w-dot" style="background:var(--green)"></span>Available</span>
+                <span><span class="w-dot" style="background:var(--amber)"></span>Maintenance</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Ward Summary Table -->
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">Ward Summary</div>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ward</th>
+                  <th>Floor</th>
+                  <th>Total</th>
+                  <th>Occupied</th>
+                  <th>Available</th>
+                  <th>Maintenance</th>
+                  <th>Occupancy</th>
+                </tr>
+              </thead>
+              <tbody id="ward-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Modal -->
+  <div class="overlay" id="confirm-modal">
+    <div class="confirm-box">
+      <div class="confirm-title" id="confirm-title">Confirm Action</div>
+      <div class="confirm-msg" id="confirm-msg"></div>
+      <div class="confirm-actions">
+        <button class="btn btn-ghost" onclick="closeModal('confirm-modal')">Cancel</button>
+        <button class="btn btn-danger" id="confirm-yes">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Dropdown -->
+  <div class="notif-dropdown" id="notif-dropdown">
+    <div class="notif-hd">
+      <span>Notifications</span>
+      <span onclick="Notifs.markAllRead()">Mark all read</span>
+    </div>
+    <div id="notif-panel"></div>
+  </div>
+
+  <!-- Bed Tooltip -->
+  <div class="bed-popup" id="bed-popup"></div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="toast-icon" id="t-icon">ℹ️</span>
+    <span class="toast-msg" id="t-msg"></span>
+    <span class="toast-close" onclick="Toast.hide()">✕</span>
+  </div>
+
+  <!-- Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="trail" id="trail"></div>
+
+  <script src="app.js"></script>
+  <script src="assistant.js"></script>
+  <script src="modules.js"></script>
+
+</body>
+</html>

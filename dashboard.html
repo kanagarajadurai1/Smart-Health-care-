@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Health HMS — Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">✚</div>
+        <div>
+          <div class="logo-name">Smart Health</div>
+          <div class="logo-tag">Healing People. Powering Care.</div>
+        </div>
+      </div>
+      <div class="nav">
+        <div class="nav-sect">Overview</div>
+        <a class="nav-item" href="dashboard.html"><span class="nav-icon">🏠</span>Dashboard</a>
+        <div class="nav-sect">Clinical</div>
+        <a class="nav-item" href="patients.html"><span class="nav-icon">👤</span>Patients<span class="nav-badge" id="nav-count">9</span></a>
+        <a class="nav-item" href="doctors.html"><span class="nav-icon">🩺</span>Doctors</a>
+        <a class="nav-item" href="appointments.html"><span class="nav-icon">📅</span>Appointments<span class="nav-badge">7</span></a>
+        <div class="nav-sect">Administration</div>
+        <a class="nav-item" href="billing.html"><span class="nav-icon">💳</span>Billing</a>
+        <a class="nav-item" href="wards.html"><span class="nav-icon">🏥</span>Wards &amp; Beds</a>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-row">
+          <div class="avatar" id="sidebar-avatar">DR</div>
+          <div>
+            <div class="user-name" id="sidebar-name">Dr. Robert Chen</div>
+            <div class="user-role" id="sidebar-role">Admin · Administration</div>
+          </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">🚪 Sign Out</button>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="topbar-title">Dashboard</div>
+        <span id="live-clock"></span>
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-inp" placeholder="Search or Ctrl+K…">
+        </div>
+        <button class="icon-btn theme-btn" onclick="Theme.toggle()" title="Toggle theme">🌙</button>
+        <div class="icon-btn" id="notif-btn" onclick="Notifs.toggle()">
+          🔔<span class="notif-badge" id="notif-badge">2</span>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('add-patient-modal')">+ Add Patient</button>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+
+        <!-- Stat Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-lbl">Total Patients</div>
+            <div class="stat-val" id="stat-patients">0</div>
+            <div class="stat-chg up">▲ 4.2% this month</div>
+            <div class="stat-ic" style="background:rgba(61,142,248,.12)">👤</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-lbl">Today's Appointments</div>
+            <div class="stat-val" id="stat-appts">0</div>
+            <div class="stat-chg up">▲ 6 vs yesterday</div>
+            <div class="stat-ic" style="background:rgba(34,197,94,.12)">📅</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-lbl">Bed Occupancy</div>
+            <div class="stat-val" id="stat-beds">0</div>
+            <div class="stat-chg dn">▼ 2% from last week</div>
+            <div class="stat-ic" style="background:rgba(245,158,11,.12)">🏥</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-lbl">Revenue (Month)</div>
+            <div class="stat-val" id="stat-revenue">0</div>
+            <div class="stat-chg up">▲ 11.3% vs last month</div>
+            <div class="stat-ic" style="background:rgba(167,139,250,.12)">💰</div>
+          </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid-3">
+
+          <!-- Left Column -->
+          <div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-hd">
+                <div class="card-title">Recent Admissions</div>
+                <a class="card-link" href="patients.html">View all →</a>
+              </div>
+              <div class="tbl-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Patient</th>
+                      <th>Ward</th>
+                      <th>Admitted</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admissions-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+              <div class="card" style="padding:16px 18px">
+                <div class="stat-lbl">Surgeries Today</div>
+                <div class="stat-val" style="font-size:22px">6</div>
+                <div class="stat-chg up">▲ 2 scheduled</div>
+              </div>
+              <div class="card" style="padding:16px 18px">
+                <div class="stat-lbl">Lab Reports</div>
+                <div class="stat-val" style="font-size:22px">14</div>
+                <div style="font-size:11px;color:var(--text2)">3 pending review</div>
+              </div>
+              <div class="card" style="padding:16px 18px">
+                <div class="stat-lbl">Emergency</div>
+                <div class="stat-val" style="font-size:22px;color:var(--red)">2</div>
+                <div class="stat-chg dn">▲ active now</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div>
+            <div class="card" style="margin-bottom:14px">
+              <div class="card-hd">
+                <div class="card-title">Today's Schedule</div>
+                <a class="card-link" href="appointments.html">View all →</a>
+              </div>
+              <div class="card-body" id="schedule-list"></div>
+            </div>
+            <div class="card">
+              <div class="card-hd">
+                <div class="card-title">Activity Feed</div>
+              </div>
+              <div class="card-body" id="activity-feed"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Patient Modal -->
+  <div class="overlay" id="add-patient-modal">
+    <div class="modal">
+      <div class="modal-hd">
+        <div class="modal-title">Quick Register Patient</div>
+        <button class="modal-close" onclick="closeModal('add-patient-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First Name *</label>
+            <input class="form-input" id="qp-fn" type="text" placeholder="John">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name *</label>
+            <input class="form-input" id="qp-ln" type="text" placeholder="Smith">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Department</label>
+          <select class="form-input" id="qp-dept">
+            <option>General</option>
+            <option>Cardiology</option>
+            <option>Neurology</option>
+            <option>Orthopedics</option>
+            <option>Pediatrics</option>
+          </select>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('add-patient-modal')">Cancel</button>
+          <button class="btn btn-primary" onclick="addPatientDash()">Register</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Modal -->
+  <div class="overlay" id="confirm-modal">
+    <div class="confirm-box">
+      <div class="confirm-title" id="confirm-title">Confirm Action</div>
+      <div class="confirm-msg" id="confirm-msg"></div>
+      <div class="confirm-actions">
+        <button class="btn btn-ghost" onclick="closeModal('confirm-modal')">Cancel</button>
+        <button class="btn btn-danger" id="confirm-yes">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Dropdown -->
+  <div class="notif-dropdown" id="notif-dropdown">
+    <div class="notif-hd">
+      <span>Notifications</span>
+      <span onclick="Notifs.markAllRead()">Mark all read</span>
+    </div>
+    <div id="notif-panel"></div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="toast-icon" id="t-icon">ℹ️</span>
+    <span class="toast-msg" id="t-msg"></span>
+    <span class="toast-close" onclick="Toast.hide()">✕</span>
+  </div>
+
+  <!-- Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="trail" id="trail"></div>
+
+  <script src="app.js"></script>
+  <script src="assistant.js"></script>
+  <script src="dashboard.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Health HMS — Billing</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">✚</div>
+        <div>
+          <div class="logo-name">Smart Health</div>
+          <div class="logo-tag">Healing People. Powering Care.</div>
+        </div>
+      </div>
+      <div class="nav">
+        <div class="nav-sect">Overview</div>
+        <a class="nav-item" href="dashboard.html"><span class="nav-icon">🏠</span>Dashboard</a>
+        <div class="nav-sect">Clinical</div>
+        <a class="nav-item" href="patients.html"><span class="nav-icon">👤</span>Patients<span class="nav-badge" id="nav-count">9</span></a>
+        <a class="nav-item" href="doctors.html"><span class="nav-icon">🩺</span>Doctors</a>
+        <a class="nav-item" href="appointments.html"><span class="nav-icon">📅</span>Appointments<span class="nav-badge">7</span></a>
+        <div class="nav-sect">Administration</div>
+        <a class="nav-item" href="billing.html"><span class="nav-icon">💳</span>Billing</a>
+        <a class="nav-item" href="wards.html"><span class="nav-icon">🏥</span>Wards &amp; Beds</a>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-row">
+          <div class="avatar" id="sidebar-avatar">DR</div>
+          <div>
+            <div class="user-name" id="sidebar-name">Dr. Robert Chen</div>
+            <div class="user-role" id="sidebar-role">Admin · Administration</div>
+          </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">🚪 Sign Out</button>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="topbar-title">Billing &amp; Invoices</div>
+        <span id="live-clock"></span>
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-inp" placeholder="Search invoices…">
+        </div>
+        <button class="icon-btn theme-btn" onclick="Theme.toggle()" title="Toggle theme">🌙</button>
+        <div class="icon-btn" id="notif-btn" onclick="Notifs.toggle()">
+          🔔<span class="notif-badge" id="notif-badge">2</span>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('bill-modal')">+ New Invoice</button>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+
+        <!-- Billing Stats -->
+        <div class="billing-stats">
+          <div class="bill-sc">
+            <div class="stat-lbl">Total Revenue</div>
+            <div class="stat-val" style="font-size:22px">$84,240</div>
+            <div style="font-size:11px;color:var(--green);margin-top:3px">↑ 11.3% this month</div>
+            <div class="bill-bar" style="background:var(--accent);width:84%"></div>
+          </div>
+          <div class="bill-sc">
+            <div class="stat-lbl">Paid</div>
+            <div class="stat-val" style="font-size:22px;color:var(--green)">$68,240</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:3px">5 invoices paid</div>
+            <div class="bill-bar" style="background:var(--green);width:70%"></div>
+          </div>
+          <div class="bill-sc">
+            <div class="stat-lbl">Outstanding</div>
+            <div class="stat-val" style="font-size:22px;color:var(--red)">$12,400</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:3px">2 invoices overdue</div>
+            <div class="bill-bar" style="background:var(--red);width:40%"></div>
+          </div>
+          <div class="bill-sc">
+            <div class="stat-lbl">Pending</div>
+            <div class="stat-val" style="font-size:22px;color:var(--amber)">$8,200</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:3px">1 awaiting review</div>
+            <div class="bill-bar" style="background:var(--amber);width:25%"></div>
+          </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <div class="tab-row">
+            <button class="tab active" onclick="setBillFilter('all',this)">All</button>
+            <button class="tab" onclick="setBillFilter('Paid',this)">Paid</button>
+            <button class="tab" onclick="setBillFilter('Pending',this)">Pending</button>
+            <button class="tab" onclick="setBillFilter('Outstanding',this)">Outstanding</button>
+          </div>
+          <span id="count-label" style="font-size:13px;color:var(--text2)"></span>
+          <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="exportInvoices()">
+            ⬇ Export CSV
+          </button>
+        </div>
+
+        <!-- Invoices Table -->
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">Invoices</div>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Invoice #</th>
+                  <th>Patient</th>
+                  <th>Date</th>
+                  <th>Services</th>
+                  <th>Amount</th>
+                  <th>Insurance</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="inv-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- New Invoice Modal -->
+  <div class="overlay" id="bill-modal">
+    <div class="modal">
+      <div class="modal-hd">
+        <div class="modal-title">Create Invoice</div>
+        <button class="modal-close" onclick="closeModal('bill-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Patient Name *</label>
+            <input class="form-input" id="f-patient" type="text" placeholder="Emma Wilson">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input class="form-input" id="f-date" type="date">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Services</label>
+            <input class="form-input" id="f-svc" type="text" placeholder="Consultation + Lab">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Amount ($)</label>
+            <input class="form-input" id="f-amt" type="number" placeholder="0.00">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Insurance</label>
+          <select class="form-input" id="f-ins">
+            <option>BlueCross</option>
+            <option>Aetna</option>
+            <option>Cigna</option>
+            <option>None</option>
+          </select>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('bill-modal')">Cancel</button>
+          <button class="btn btn-primary" onclick="createInvoice()">Create Invoice</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Modal -->
+  <div class="overlay" id="confirm-modal">
+    <div class="confirm-box">
+      <div class="confirm-title" id="confirm-title">Confirm Action</div>
+      <div class="confirm-msg" id="confirm-msg"></div>
+      <div class="confirm-actions">
+        <button class="btn btn-ghost" onclick="closeModal('confirm-modal')">Cancel</button>
+        <button class="btn btn-danger" id="confirm-yes">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Dropdown -->
+  <div class="notif-dropdown" id="notif-dropdown">
+    <div class="notif-hd">
+      <span>Notifications</span>
+      <span onclick="Notifs.markAllRead()">Mark all read</span>
+    </div>
+    <div id="notif-panel"></div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="toast-icon" id="t-icon">ℹ️</span>
+    <span class="toast-msg" id="t-msg"></span>
+    <span class="toast-close" onclick="Toast.hide()">✕</span>
+  </div>
+
+  <!-- Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="trail" id="trail"></div>
+
+  <script src="app.js"></script>
+  <script src="assistant.js"></script>
+  <script src="modules.js"></script>
+
+</body>
+</html>

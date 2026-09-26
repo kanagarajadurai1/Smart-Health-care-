@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Health HMS — Patients</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">✚</div>
+        <div>
+          <div class="logo-name">Smart Health</div>
+          <div class="logo-tag">Healing People. Powering Care.</div>
+        </div>
+      </div>
+      <div class="nav">
+        <div class="nav-sect">Overview</div>
+        <a class="nav-item" href="dashboard.html"><span class="nav-icon">🏠</span>Dashboard</a>
+        <div class="nav-sect">Clinical</div>
+        <a class="nav-item" href="patients.html"><span class="nav-icon">👤</span>Patients<span class="nav-badge" id="nav-count">9</span></a>
+        <a class="nav-item" href="doctors.html"><span class="nav-icon">🩺</span>Doctors</a>
+        <a class="nav-item" href="appointments.html"><span class="nav-icon">📅</span>Appointments<span class="nav-badge">7</span></a>
+        <div class="nav-sect">Administration</div>
+        <a class="nav-item" href="billing.html"><span class="nav-icon">💳</span>Billing</a>
+        <a class="nav-item" href="wards.html"><span class="nav-icon">🏥</span>Wards &amp; Beds</a>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-row">
+          <div class="avatar" id="sidebar-avatar">DR</div>
+          <div>
+            <div class="user-name" id="sidebar-name">Dr. Robert Chen</div>
+            <div class="user-role" id="sidebar-role">Admin · Administration</div>
+          </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">🚪 Sign Out</button>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="topbar-title">Patient Management</div>
+        <span id="live-clock"></span>
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-inp" placeholder="Search name, ID, department…">
+        </div>
+        <button class="icon-btn theme-btn" onclick="Theme.toggle()" title="Toggle theme">🌙</button>
+        <div class="icon-btn" id="notif-btn" onclick="Notifs.toggle()">
+          🔔<span class="notif-badge" id="notif-badge">2</span>
+        </div>
+        <button class="btn btn-primary" onclick="openAddModal()">+ New Patient</button>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+
+        <!-- Mini Stats -->
+        <div class="mini-stats">
+          <div class="mini-sc">
+            <div class="mini-lbl">Total</div>
+            <div class="mini-val" id="s-total">0</div>
+          </div>
+          <div class="mini-sc">
+            <div class="mini-lbl">Inpatient</div>
+            <div class="mini-val" id="s-in" style="color:var(--amber)">0</div>
+          </div>
+          <div class="mini-sc">
+            <div class="mini-lbl">Outpatient</div>
+            <div class="mini-val" id="s-out" style="color:var(--accent)">0</div>
+          </div>
+          <div class="mini-sc">
+            <div class="mini-lbl">Discharged</div>
+            <div class="mini-val" id="s-dis" style="color:var(--green)">0</div>
+          </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <div class="tab-row">
+            <button class="tab active" onclick="filterPats('all',this)">All</button>
+            <button class="tab" onclick="filterPats('inpatient',this)">Inpatient</button>
+            <button class="tab" onclick="filterPats('outpatient',this)">Outpatient</button>
+            <button class="tab" onclick="filterPats('discharged',this)">Discharged</button>
+          </div>
+          <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="exportPatients()">
+            ⬇ Export CSV
+          </button>
+        </div>
+
+        <!-- Patients Table -->
+        <div class="card">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Age</th>
+                  <th>Department</th>
+                  <th>Doctor</th>
+                  <th>Contact</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="patients-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Patient Modal -->
+  <div class="overlay" id="patient-modal">
+    <div class="modal">
+      <div class="modal-hd">
+        <div class="modal-title">Register New Patient</div>
+        <button class="modal-close" onclick="closeModal('patient-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First Name *</label>
+            <input class="form-input" id="f-fn" type="text" placeholder="John">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name *</label>
+            <input class="form-input" id="f-ln" type="text" placeholder="Smith">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Date of Birth</label>
+            <input class="form-input" id="f-dob" type="date">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Gender</label>
+            <select class="form-input" id="f-gender">
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Department</label>
+            <select class="form-input" id="f-dept">
+              <option>General</option>
+              <option>Cardiology</option>
+              <option>Neurology</option>
+              <option>Orthopedics</option>
+              <option>Pediatrics</option>
+              <option>ICU</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Doctor</label>
+            <select class="form-input" id="f-doc">
+              <option>Dr. Chen</option>
+              <option>Dr. Patel</option>
+              <option>Dr. Kim</option>
+              <option>Dr. Torres</option>
+              <option>Dr. Martinez</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Contact</label>
+            <input class="form-input" id="f-phone" type="tel" placeholder="+1 (555) 000-0000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-input" id="f-status">
+              <option value="inpatient">Inpatient</option>
+              <option value="outpatient">Outpatient</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes</label>
+          <textarea class="form-input" id="f-notes" rows="2" placeholder="Clinical notes…"></textarea>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('patient-modal')">Cancel</button>
+          <button class="btn btn-primary" onclick="savePatient()">Register Patient</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Patient Modal -->
+  <div class="overlay" id="view-modal">
+    <div class="modal">
+      <div class="modal-hd">
+        <div class="modal-title" id="view-name">Patient Details</div>
+        <button class="modal-close" onclick="closeModal('view-modal')">✕</button>
+      </div>
+      <div class="modal-body" id="view-body"></div>
+    </div>
+  </div>
+
+  <!-- Confirm Modal -->
+  <div class="overlay" id="confirm-modal">
+    <div class="confirm-box">
+      <div class="confirm-title" id="confirm-title">Confirm Action</div>
+      <div class="confirm-msg" id="confirm-msg"></div>
+      <div class="confirm-actions">
+        <button class="btn btn-ghost" onclick="closeModal('confirm-modal')">Cancel</button>
+        <button class="btn btn-danger" id="confirm-yes">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Dropdown -->
+  <div class="notif-dropdown" id="notif-dropdown">
+    <div class="notif-hd">
+      <span>Notifications</span>
+      <span onclick="Notifs.markAllRead()">Mark all read</span>
+    </div>
+    <div id="notif-panel"></div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="toast-icon" id="t-icon">ℹ️</span>
+    <span class="toast-msg" id="t-msg"></span>
+    <span class="toast-close" onclick="Toast.hide()">✕</span>
+  </div>
+
+  <!-- Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="trail" id="trail"></div>
+
+  <script src="app.js"></script>
+  <script src="assistant.js"></script>
+  <script src="patients.js"></script>
+
+</body>
+</html>

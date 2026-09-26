@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Health HMS — Sign In</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- Background -->
+  <div class="bg-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <!-- Custom Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="trail" id="trail"></div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <span class="toast-icon" id="t-icon">ℹ️</span>
+    <span class="toast-msg" id="t-msg"></span>
+    <span class="toast-close" onclick="Toast.hide()">✕</span>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div class="overlay" id="fp-overlay" onclick="closeFP(event)">
+    <div class="modal" style="width:380px">
+      <div class="modal-hd">
+        <div class="modal-title">Reset Password</div>
+        <button class="modal-close" onclick="closeModal('fp-overlay')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px;color:var(--text2);margin-bottom:18px;font-weight:300;line-height:1.6">
+          Enter your hospital email. We'll send a secure reset link within 2 minutes.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Hospital Email</label>
+          <input class="form-input" type="email" id="fp-email" placeholder="you@smarthealth.hospital">
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal('fp-overlay')">Cancel</button>
+          <button class="btn btn-primary" onclick="sendReset()">Send Reset Link</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Layout -->
+  <div class="login-layout">
+
+    <!-- LEFT — Branding Panel -->
+    <div class="login-left">
+
+      <div>
+        <div class="status-pill">
+          <div class="s-dot"></div>
+          All Systems Operational
+        </div>
+      </div>
+
+      <div style="position:relative;z-index:1">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:36px">
+          <div class="logo-icon" style="width:48px;height:48px;font-size:24px">✚</div>
+          <div>
+            <div class="logo-name" style="font-size:20px">Smart Health</div>
+            <div class="logo-tag">Healing People. Powering Care.</div>
+          </div>
+        </div>
+        <h1 class="hero-h">
+          Where Precision Meets<br>
+          <span class="hl">Compassionate Care.</span>
+        </h1>
+        <p class="hero-sub">
+          A unified platform empowering healthcare professionals with real-time insights,
+          seamless workflows, and intelligent automation — so every second counts for your patients.
+        </p>
+        <div class="feature-pills">
+          <div class="feature-pill">🧪 Frontend Demo</div>
+          <div class="feature-pill">⚡ Interactive UI</div>
+          <div class="feature-pill">🏥 6 Demo Modules</div>
+          <div class="feature-pill">💾 Browser-local Storage</div>
+          <div class="feature-pill">🌐 No Backend Connected</div>
+        </div>
+      </div>
+
+      <div class="test-box">
+        <div class="test-q">
+          "Smart Health transformed how our ICU team communicates. We reduced administrative
+          overhead by 40% in the first month — our staff can now focus entirely on patient care."
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="test-av">SK</div>
+          <div>
+            <div class="test-name">Dr. Sarah Kim</div>
+            <div class="test-role">Chief Medical Officer, St. Andrews Medical Centre</div>
+          </div>
+          <div class="test-stars">★★★★★</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT — Login Panel -->
+    <div class="login-right">
+
+      <div class="login-controls">
+        <button class="ctrl-btn" onclick="showHint()">💡 Demo Credentials</button>
+        <button class="ctrl-btn theme-btn" onclick="Theme.toggle()">🌙</button>
+      </div>
+
+      <div class="login-card">
+
+        <div class="login-hd">
+          <div class="login-title">Welcome Back</div>
+          <div class="login-sub">Sign in to Smart Health Hospital Management System</div>
+        </div>
+
+        <!-- Role Selector -->
+        <div class="role-grid">
+          <button class="role-btn selected" data-role="admin" onclick="selectRole(this)">
+            <span class="role-ic">⚙️</span>
+            <span class="role-lbl">Admin</span>
+          </button>
+          <button class="role-btn" data-role="doctor" onclick="selectRole(this)">
+            <span class="role-ic">🩺</span>
+            <span class="role-lbl">Doctor</span>
+          </button>
+          <button class="role-btn" data-role="nurse" onclick="selectRole(this)">
+            <span class="role-ic">💉</span>
+            <span class="role-lbl">Nurse</span>
+          </button>
+        </div>
+
+        <!-- Employee ID -->
+        <div class="form-group">
+          <label class="form-label">Employee ID / Email</label>
+          <div class="inp-wrap">
+            <span class="inp-ic">👤</span>
+            <input class="form-input" type="text" id="emp-id"
+              placeholder="e.g. ADM-001 or admin@smarthealth.hospital"
+              oninput="clearErr('emp-id')">
+          </div>
+          <div class="field-error" id="err-emp">⚠ Please enter your Employee ID or email.</div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="inp-wrap">
+            <span class="inp-ic">🔒</span>
+            <input class="form-input" type="password" id="password"
+              placeholder="Enter your password"
+              oninput="clearErr('password')">
+            <span class="pw-eye" id="pw-eye" onclick="togglePW()">👁</span>
+          </div>
+          <div class="field-error" id="err-pw">⚠ Password must be at least 6 characters.</div>
+        </div>
+
+        <!-- Remember + Forgot -->
+        <div class="login-extras">
+          <label class="remember-label" onclick="toggleRemember()">
+            <div class="chk-box" id="chk"></div>
+            Remember me for 30 days
+          </label>
+          <a href="#" class="forgot-link" onclick="openFP(event)">Forgot password?</a>
+        </div>
+
+        <!-- Submit -->
+        <button class="btn-submit" id="login-btn" onclick="doLogin()">
+          <div class="spinner" id="spinner"></div>
+          <span class="btn-text">Sign In to Dashboard</span>
+        </button>
+
+        <div class="or-divider">or continue with</div>
+
+        <!-- SSO -->
+        <div class="sso-row">
+          <button class="sso-btn" onclick="Toast.show('🪟','Microsoft SSO — contact your IT administrator.',5000)">
+            🪟 Microsoft
+          </button>
+          <button class="sso-btn" onclick="Toast.show('💳','Smart Card — insert your hospital ID card.',5000)">
+            💳 Smart Card
+          </button>
+        </div>
+
+        <div class="login-footer">
+          Need help? <a href="#">IT Support</a> · <a href="tel:+18005550000">1-800-SMART-HEALTH</a>
+        </div>
+
+        <div class="sec-row">
+          <div class="sec-badge">🧪 Demo only</div>
+          <div class="sec-badge">🚫 No real patient data</div>
+          <div class="sec-badge">⚠️ Not for clinical use</div>
+        </div>
+
+      </div>
+
+      <button class="btn btn-ghost btn-sm hint-btn" onclick="showHint()">
+        💡 View Demo Credentials
+      </button>
+
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+  <script src="login.js"></script>
+
+</body>
+</html>
